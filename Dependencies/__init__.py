@@ -2,6 +2,7 @@
 Author: Oren Sitton
 File: __init__.py
 Python Version: 3
+Description: init file is used by other files to import functions & classes from folder
 """
 import logging
 

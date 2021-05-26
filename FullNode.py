@@ -13,7 +13,31 @@ from tkinter import messagebox
 
 
 class FullNodeWindow(Tk):
+    """
+        FullNodeWindow class, used to initiate and run FullNode window, inherits from tkinter.Tk
+
+        Attributes
+        ----------
+        configure_button : tkinter.Button
+            button to launch configuration window
+        run_button : tkinter.Button
+            button to start __main__.py process
+        terminate_button : tkinter.Button
+            button terminate __main__.py process
+        process : str or subprocess.Popen
+            subprocess running __main__.py when running, blank string otherwise
+        state : bool
+            state of subprocess (True if running, False if else)
+
+        Methods
+        -------
+        
+        """
     def __init__(self):
+        """
+        initializes FullNode's window (title, icon & buttons)
+        """
+
         super().__init__()
 
         self.state = False
@@ -33,40 +57,50 @@ class FullNodeWindow(Tk):
         self.terminate_button["state"] = "disabled"
 
         self.title.pack(side=TOP)
-
         self.run_button.pack(side=LEFT, padx=5, pady=20)
         self.terminate_button.pack(side=LEFT, padx=5, pady=20)
         self.configure_button.pack(side=LEFT, padx=5, pady=20)
 
-    def terminate_command(self):
-        if not self.state:
-            return
-        logging.info("Terminating full node process. . . . .")
-        self.process.kill()
-
-        self.state = False
-        self.terminate_button["state"] = "disabled"
-        self.run_button["state"] = "normal"
-
-    def run_command(self):
-        if self.state:
-            return
-
-        logging.info("Launching full node process. . . . .")
-        self.process = subprocess.Popen(["python", "Dependencies\\__main__.py"])
-        self.state = True
-
-        self.run_button["state"] = "disabled"
-        self.terminate_button["state"] = "normal"
+    def config(self, configuration_dictionary, entries, types, window):
+        """
+        reads configuration values from entries, and if valid, changes configuration to match data.
+        closes configuration window when done.
+        :param configuration_dictionary: configuration dictionary of field : value
+        :type configuration_dictionary: dict
+        :param entries: list of tuples of configuration entries entry object and label objects
+        :type entries: list
+        :param types: dictionary of types of configuration fields
+        :type types: dict
+        :param window: configuration window
+        :type window: Tk
+        """
+        for i, key in enumerate(configuration_dictionary):
+            entry = entries[i][1]
+            value = entry.get()
+            try:
+                types[key](value)
+            except ValueError:
+                pass
+            else:
+                if value:
+                    configuration_dictionary[key] = types[key](value)
+        with open("Dependencies\\config.cfg", "wb") as file:
+            pickle.dump(configuration_dictionary, file)
+        window.destroy()
+        messagebox.showinfo(title="Configured", message="Configured!")
+        self.terminate_command()
 
     def configure_command(self):
+        """
+        launches configuration window & configures FullNode
+        """
         config_window = Tk()
         config_window.title("")
         config_window.iconbitmap("Dependencies\\GUI\\configure.ico")
         config_window.resizable(width=False, height=False)
 
         with open("Dependencies\\config.cfg", "rb") as infile:
-            values= pickle.load(infile)
+            configuration_dictionary= pickle.load(infile)
 
         types = {
             "ip address": str,
@@ -83,10 +117,10 @@ class FullNodeWindow(Tk):
         }
 
         entries = []
-        for key in values:
+        for key in configuration_dictionary:
             frame = tk.Frame(config_window)
             entry = tk.Entry(frame, width=30, justify=tk.LEFT)
-            entry.insert(tk.END, values[key])
+            entry.insert(tk.END, configuration_dictionary[key])
             label = tk.Label(frame, text=key, justify=tk.LEFT, anchor="e")
 
             label.pack(side=tk.TOP)
@@ -95,38 +129,48 @@ class FullNodeWindow(Tk):
             entries.append((label, entry))
 
         run_button = tk.Button(config_window, width=10, text="⚙",
-                               command=lambda: self.config(values, entries, types, config_window))
+                               command=lambda: self.config(configuration_dictionary, entries, types, config_window))
         run_button.pack(side=tk.TOP)
 
         config_window.mainloop()
 
-    def config(self, labels, entries, types, window):
-        for i, key in enumerate(labels):
-            entry = entries[i][1]
-            value = entry.get()
-            try:
-                types[key](value)
-            except ValueError:
-                pass
-            else:
-                if value:
-                    labels[key] = types[key](value)
-        with open("Dependencies\\config.cfg", "wb") as file:
-            pickle.dump(labels, file)
-        window.destroy()
-        messagebox.showinfo(title="Configured", message="Configured!")
-        self.terminate_command()
-
     def on_closing(self):
+        """
+        function to run when user closes FullNode window (x)
+        """
         self.terminate_command()
         exit(-1)
-        pass
+
+    def run_command(self):
+        """
+        function to call when run button is pressed, runs the Dependencies\\__main__.py program
+        """
+        if self.state:
+            return
+
+        logging.info("Launching full node process. . . . .")
+        self.process = subprocess.Popen(["python", "Dependencies\\__main__.py"])
+        self.state = True
+
+        self.run_button["state"] = "disabled"
+        self.terminate_button["state"] = "normal"
+
+    def terminate_command(self):
+        """
+        function to run when terminate button is pressed, terminates Dependencies\\__main__.py program if running
+        """
+        if not self.state:
+            return
+        logging.info("Terminating full node process. . . . .")
+        self.process.kill()
+
+        self.state = False
+        self.terminate_button["state"] = "disabled"
+        self.run_button["state"] = "normal"
 
 
 def main():
-    myFont = ("Times New Roman", 20, "bold")
-    window = FullNodeWindow()
-    window.mainloop()
+    FullNodeWindow().mainloop()
 
 
 if __name__ == '__main__':
