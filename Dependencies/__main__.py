@@ -435,7 +435,7 @@ def validate_transaction_data(transaction, blockchain, previous_block_hash):
 
         appears = False
 
-        for source_output in input_transaction:
+        for source_output in input_transaction.outputs:
             if source_output[0] == input1[0]:
                 appears = True
                 input_amount += source_output[1]
@@ -645,7 +645,7 @@ def handle_message(message, blockchain):
         raise TypeError("handle_message: expected message to be of type str")
     if not isinstance(blockchain, Blockchain):
         raise TypeError("handle_message: expected blockchain to be of type Blockchain")
-    message_handling_functions = dict( #  a=lambda: handle_message_peers_request(),
+    message_handling_functions = dict(  # a= : handle_message_peers_request(),
                                        #  b=lambda: handle_message_peers(message),
                                       c=lambda: handle_message_block_request(message, blockchain),
                                       d=lambda: handle_message_block(message, blockchain),
@@ -933,7 +933,7 @@ def handle_message_error(message):
     """
     if not isinstance(message, str):
         raise TypeError("handle_message_error: expected message to be of type str")
-    logging.info("Message is an error message [{}]".format(dehexify_string(message[1:])))
+    logging.info("Message is an error message")
     return None, "", -1
 
 
