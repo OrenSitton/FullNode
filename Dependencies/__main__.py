@@ -554,7 +554,7 @@ def validate_transaction_format(transaction):
     for i, input1 in enumerate(transaction.inputs):
         for j, input2 in enumerate(transaction.inputs):
             if i != j:
-                if input1[0] == input2[0] and input1[1] == input2[1] and input1[2] == input1[2]:
+                if input1[0] == input2[0] and input1[1] == input2[1] and input1[2] == input2[2]:
                     return False, "input source appears twice"
 
     # input sources don't appear twice, validate that outputs keys don't appear twice
