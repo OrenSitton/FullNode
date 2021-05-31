@@ -1185,25 +1185,26 @@ def main():
 
         for sock in readable:
             if sock is server_socket:
-                client_socket, address = server_socket.accept()
+                if flags["finished seeding"]:
+                    client_socket, address = server_socket.accept()
 
-                exists = False
-                for other_sock in sockets:
-                    if other_sock.getpeername()[0] == address[0]:
-                        exists = True
+                    exists = False
+                    for other_sock in sockets:
+                        if other_sock.getpeername()[0] == address[0]:
+                            exists = True
 
-                if exists:
-                    logging.info("[{}, {}]: Node attempted connection to server, but connection already exists".format(address[0], address[1]))
-                    client_socket.close()
-                else:
-                    sockets.append(client_socket)
-                    logging.info("[{}, {}]: Node connected to server".format(address[0], address[1]))
+                    if exists:
+                        logging.info("[{}, {}]: Node attempted connection to server, but connection already exists".format(address[0], address[1]))
+                        client_socket.close()
+                    else:
+                        sockets.append(client_socket)
+                        logging.info("[{}, {}]: Node connected to server".format(address[0], address[1]))
 
-                    client_socket.setblocking(False)
+                        client_socket.setblocking(False)
 
-                    if address[0] not in message_queues:
-                        message_queues[address[0]] = queue.Queue()
-                    message_queues[address[0]].put(("00047c0000000000000000000000000000000000000000000000000000000000000000000000", "block request"))
+                        if address[0] not in message_queues:
+                            message_queues[address[0]] = queue.Queue()
+                        message_queues[address[0]].put(("00047c0000000000000000000000000000000000000000000000000000000000000000000000", "block request"))
 
             else:
                 try:
