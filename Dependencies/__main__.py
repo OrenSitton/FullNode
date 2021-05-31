@@ -1208,6 +1208,7 @@ def main():
 
             else:
                 try:
+                    address = sock.getpeername()
                     size = sock.recv(5).decode()
                 except connection_errors:
                     sock.close()
@@ -1234,23 +1235,22 @@ def main():
                                 sockets.remove(sock)
 
                             else:
-                                logging.info("[{}, {}]: Received message from node".format(sock.getpeername()[0],
-                                                                                           sock.getpeername()[1]))
+                                logging.info("[{}, {}]: Received message from node".format(address[0], address[1]))
                                 reply = handle_message(message, blockchain)
                                 logging.debug("message: {}".format(message))
                                 logging.debug("reply: {}".format(reply))
 
                                 if reply[2] == -1:
-                                    logging.info("[{}, {}]: No reply")
+                                    logging.info("[{}, {}]: No reply".format(address[0], address[1]))
 
                                 if reply[2] == 1:
-                                    logging.info("[{}, {}]: Sending reply to sender only")
+                                    logging.info("[{}, {}]: Sending reply to sender only".format(address[0], address[1]))
                                     if sock.getpeername()[0] not in message_queues:
                                         message_queues[sock.getpeername()[0]] = queue.Queue()
                                     message_queues[sock.getpeername()[0]].put((reply[0], reply[1]))
 
                                 elif reply[2] == 2:
-                                    logging.info("[{}, {}]: Sending reply to all nodes")
+                                    logging.info("[{}, {}]: Sending reply to all nodes".format(address[1], address[2]))
 
                                     for other_sock in sockets:
                                         if other_sock.getpeername()[0] not in message_queues:

@@ -252,7 +252,7 @@ class Transaction:
         if not isinstance(transaction, Transaction):
             raise TypeError("Transaction.sort_key: expected transaction to be of type Transaction")
 
-        key = "{}{}{}".format(str(int(transaction.inputs[0][0]), 16), transaction.inputs[0][1], transaction.inputs[0][2])
+        key = "{}{}{}".format(str(int(transaction.inputs[0][0], 16)), transaction.inputs[0][1], transaction.inputs[0][2])
         return int(key, 16)
 
 
