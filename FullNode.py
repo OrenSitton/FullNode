@@ -31,7 +31,7 @@ class FullNodeWindow(Tk):
 
         Methods
         -------
-        
+
         """
     def __init__(self):
         """
@@ -128,9 +128,9 @@ class FullNodeWindow(Tk):
             frame.pack(side=tk.TOP)
             entries.append((label, entry))
 
-        run_button = tk.Button(config_window, width=10, text="⚙",
+        run_button = tk.Button(config_window, width=10, text="Configure", font=("Times New Roman", 12),
                                command=lambda: self.config(configuration_dictionary, entries, types, config_window))
-        run_button.pack(side=tk.TOP)
+        run_button.pack(side=tk.TOP, pady=10)
 
         config_window.mainloop()
 

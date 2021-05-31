@@ -7,7 +7,7 @@ from datetime import datetime
 from hashlib import sha256
 
 try:
-    from Dependencies.methods import hexify
+    from Dependencies.methods import fixed_length_hex
 except ModuleNotFoundError:
     try:
         from FullNode.Dependencies.methods import hexify
@@ -43,7 +43,7 @@ class Transaction:
 
     Static Methods
     --------------
-    from_network_format(hex_transaction)
+    parse(hex_transaction)
         creates a Transaction object from a string, containing a transaction in the network protocol format
     hexify(number, length)
         calculates hexadecimal value of the number, with prefix zeroes to match length
@@ -138,25 +138,25 @@ class Transaction:
         """
         message = ""
 
-        time_created = hexify(int(self.timestamp.timestamp()), 8)
+        time_created = fixed_length_hex(int(self.timestamp.timestamp()), 8)
 
-        inputs_amount = hexify(len(self.inputs), 1)
+        inputs_amount = fixed_length_hex(len(self.inputs), 1)
 
-        outputs_amount = hexify(len(self.outputs), 1)
+        outputs_amount = fixed_length_hex(len(self.outputs), 1)
 
         message = "e{}{}{}".format(time_created, inputs_amount, outputs_amount)
 
         for inp in self.inputs:
             input_key = inp[0]
-            input_block_number = hexify(inp[1], 6)
-            input_transaction_number = hexify(inp[2], 2)
+            input_block_number = fixed_length_hex(inp[1], 6)
+            input_transaction_number = fixed_length_hex(inp[2], 2)
             signature = inp[3]
 
             message += input_key + input_block_number + input_transaction_number + signature
 
         for output in self.outputs:
             output_address = output[0]
-            amount = hexify(output[1], 4)
+            amount = fixed_length_hex(output[1], 4)
 
             message += output_address + amount
         message = message.replace(" ", "")
@@ -168,19 +168,19 @@ class Transaction:
         :return: hexadecimal transaction in signing format
         :rtype: str
         """
-        inputs_amount = len(self.inputs)
-        outputs_amount = len(self.outputs)
+        inputs_amount = fixed_length_hex(len(self.inputs), 1)
+        outputs_amount = fixed_length_hex(len(self.outputs), 1)
 
         message = "{}{}".format(inputs_amount, outputs_amount)
 
         for inp in self.inputs:
             input_key = inp[0]
-            input_block_number = hexify(inp[1], 6)
-            input_transaction_number = hexify(inp[2], 2)
+            input_block_number = fixed_length_hex(inp[1], 6)
+            input_transaction_number = fixed_length_hex(inp[2], 2)
             message += input_key + input_block_number + input_transaction_number
         for output in self.outputs:
             output_address = output[0]
-            amount = hexify(output[1], 4)
+            amount = fixed_length_hex(output[1], 4)
             message += output_address + amount
         return message
 
@@ -193,7 +193,7 @@ class Transaction:
         return sha256(self.network_format().encode()).hexdigest()
 
     @staticmethod
-    def from_network_format(hex_transaction):
+    def parse(hex_transaction):
         """
         creates a Transaction object from a string, containing a transaction in the network protocol format
         :param hex_transaction: transaction in network protocol format

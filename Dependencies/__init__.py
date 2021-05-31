@@ -1,11 +1,9 @@
 """
 Author: Oren Sitton
-File: __init__.py
+File: Dependencies\\__init__.py
 Python Version: 3
 Description: init file is used by other files to import functions & classes from folder
 """
-import logging
-
 try:
     from Dependencies.Blockchain import Blockchain
     from Dependencies.Block import Block
@@ -16,15 +14,10 @@ try:
     from Dependencies.methods import *
 
 except ModuleNotFoundError:
-    try:
-        from FullNode.Dependencies.Blockchain import Blockchain
-        from FullNode.Dependencies.Block import Block
-        from FullNode.Dependencies.SyncedArray import SyncedArray
-        from FullNode.Dependencies.Transaction import Transaction
-        from FullNode.Dependencies.SyncedDictionary import SyncedDictionary
+    from FullNode.Dependencies.Blockchain import Blockchain
+    from FullNode.Dependencies.Block import Block
+    from FullNode.Dependencies.SyncedArray import SyncedArray
+    from FullNode.Dependencies.Transaction import Transaction
+    from FullNode.Dependencies.SyncedDictionary import SyncedDictionary
 
-        from FullNode.Dependencies.methods import *
-
-    except ModuleNotFoundError:
-        logging.critical("Could not find dependencies")
-        exit(-1)
+    from FullNode.Dependencies.methods import *
