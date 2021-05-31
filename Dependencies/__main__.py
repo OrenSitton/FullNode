@@ -645,8 +645,8 @@ def handle_message(message, blockchain):
         raise TypeError("handle_message: expected message to be of type str")
     if not isinstance(blockchain, Blockchain):
         raise TypeError("handle_message: expected blockchain to be of type Blockchain")
-    message_handling_functions = dict(a=lambda: handle_message_peers_request(),
-                                      b=lambda: handle_message_peers(message),
+    message_handling_functions = dict( #  a=lambda: handle_message_peers_request(),
+                                       #  b=lambda: handle_message_peers(message),
                                       c=lambda: handle_message_block_request(message, blockchain),
                                       d=lambda: handle_message_block(message, blockchain),
                                       e=lambda: handle_message_transaction(message, blockchain),
