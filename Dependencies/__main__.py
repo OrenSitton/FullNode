@@ -1250,7 +1250,7 @@ def main():
                                     message_queues[sock.getpeername()[0]].put((reply[0], reply[1]))
 
                                 elif reply[2] == 2:
-                                    logging.info("[{}, {}]: Sending reply to all nodes".format(address[1], address[2]))
+                                    logging.info("[{}, {}]: Sending reply to all nodes".format(address[0], address[1]))
 
                                     for other_sock in sockets:
                                         if other_sock.getpeername()[0] not in message_queues:
